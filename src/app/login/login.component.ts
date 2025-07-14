@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
 
 interface User {
   UserName: string;
@@ -26,7 +27,7 @@ export class LoginComponent implements OnInit {
   showerror = false;
   showsuccess = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private firebase: FirebaseService) { }
 
   ngOnInit(): void {
     const rememberedUsername = localStorage.getItem('rememberedUsername');
@@ -41,52 +42,57 @@ export class LoginComponent implements OnInit {
 
   onSubmit(LoginForm: any) {
     if (LoginForm.valid) {
-      this.users = JSON.parse(localStorage.getItem('users') || '[]');
-      const matchedUsername = this.users.find(
-        (user: any) =>
-          user.username === this.LoginData.UserName &&
-          user.password === this.LoginData.Password
+      this.firebase.validateLogin(
+        this.LoginData.UserName,
+        this.LoginData.Password,
+        (success: boolean) => {
+          if (success) {
+            if (this.LoginData.Remember) {
+              localStorage.setItem('rememberedUsername', this.LoginData.UserName);
+              localStorage.setItem('rememberedPassword', this.LoginData.Password);
+            }
+            else {
+              localStorage.removeItem('rememberedUsername');
+              localStorage.removeItem('rememberedPassword');
+            }
+
+            sessionStorage.setItem('is_login', 'true');
+            sessionStorage.setItem('UserName', this.LoginData.UserName);
+
+            this.msgsucc = 'Login Successful';
+            this.showsuccess = true;
+
+            setTimeout(() => {
+              this.router.navigate(['/dashboard']);
+            }, 2000);
+          } else {
+            this.msgerr = 'Invalid username or password';
+            this.showerror = true;
+
+          }
+        }
       );
 
-      if (matchedUsername) {
-        if (this.LoginData.Remember) {
-          localStorage.setItem('rememberedUsername', this.LoginData.UserName);
-          localStorage.setItem('rememberedPassword', this.LoginData.Password);
-        }
 
-        sessionStorage.setItem('is_login', 'true');
-        sessionStorage.setItem('UserName', this.LoginData.UserName);
-
-        this.msgsucc = 'Login Successful';
-        this.showsuccess = true;
-
-        setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 2000);
-      } else {
-        this.msgerr = 'Invalid username or password';
-        this.showerror = true;
-
-      }
-    } else {
-      this.msgerr = 'Please fill in all required fields';
-      this.showerror = true;
-    }
+  } else {
+  this.msgerr = 'Please fill in all required fields';
+  this.showerror = true;
+}
   }
 
-  clearForm(LoginForm: any) {
-    LoginForm.resetForm();
-    this.showerror = false;
-    this.showsuccess = false;
-  }
+clearForm(LoginForm: any) {
+  LoginForm.resetForm();
+  this.showerror = false;
+  this.showsuccess = false;
+}
 
-  onForgetPassword() {
-    console.log('true');
+onForgetPassword() {
+  console.log('true');
 
-    this.router.navigate(['/forgetpwd']);
-  }
+  this.router.navigate(['/forgetpwd']);
+}
 
-  Signup() {
-    this.router.navigate(['/signup']);
-  }
+Signup() {
+  this.router.navigate(['/signup']);
+}
 }

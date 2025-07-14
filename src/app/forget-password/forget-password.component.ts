@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'forget-password',
@@ -9,52 +10,33 @@ import { Router } from '@angular/router';
 export class ForgetPasswordComponent implements OnInit {
   frgtpwdData: any = {
     ForgetUsername: '',
-  }
-  validUsername :any = '';
+  };
 
-  msg: string = '';
-  showerror: boolean = false;
-  users :any =[];
+  msgerr: string = '';
+  msgsucc: string = '';
+  showmsgerr: boolean = false;
+  showmsgsucc: boolean = false;
 
+  constructor(private router: Router, private firebase: FirebaseService) { }
 
-  constructor(private router: Router) { }
-
-  ngOnInit(): void {
-    this.validUsername = localStorage.getItem('username')
-
-  }
+  ngOnInit(): void { }
 
   onSubmit(frgtpwd: any) {
-    console.log(true);
-    console.log(frgtpwd);
-    console.log(sessionStorage.getItem('username'));
-    console.log(this.validUsername, 'valid');
-    console.log(this.frgtpwdData.ForgetUsername, 'user');
-
-
     if (frgtpwd.valid) {
-      console.log('fine');
-      this.users = JSON.parse(localStorage.getItem('users') || '[]');
-      console.log(this.users, 'users');
-      
-       this.validUsername = this.users.find(
-        (user: any) =>
-          user.username === this.frgtpwdData.ForgetUsername);
-        console.log(this.users.username);
-        console.log(this.validUsername);
-        
-        
-      if (this.validUsername) {
-        sessionStorage.setItem('username', this.validUsername.username);
-        console.log('works');
-        this.router.navigate(['/resetpwd'])
-      }
-      else {
-        console.log('error');
+      this.firebase.checkUsername(this.frgtpwdData.ForgetUsername, (exists: boolean, userObj?: any) => {
+        if (exists && userObj) {
+          sessionStorage.setItem('username', userObj.username);
+          this.msgsucc = 'Username Found'
+          this.showmsgsucc = true;
+          setTimeout(() => {
+            this.router.navigate(['/resetpwd']);
+          }, 2000);
 
-        this.msg = 'invalid Username';
-        this.showerror = true;
-      }
+        } else {
+          this.msgerr = 'Invalid username';
+          this.showmsgerr = true;
+        }
+      });
     }
   }
 }

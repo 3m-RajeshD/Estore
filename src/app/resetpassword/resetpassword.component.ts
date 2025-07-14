@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-resetpassword',
@@ -13,46 +14,44 @@ export class ResetpasswordComponent implements OnInit {
     username: ''
   };
 
-  msgerr: string  = '';
-  showmsgerr: boolean=false;
-  msgsucc:string = '';
-  showmsgsucc:boolean = false;
+  msgerr: string = '';
+  showmsgerr: boolean = false;
+  msgsucc: string = '';
+  showmsgsucc: boolean = false;
 
-  users: any[] = [];
-
-  constructor(private router: Router) {}
+  constructor(private router: Router, private firebase: FirebaseService) { }
 
   ngOnInit(): void {
-    this.ResetData.username = sessionStorage.getItem('username');  
+    const username = sessionStorage.getItem('username');
+    this.ResetData.username = username || '';
   }
 
   onSubmit(ResetpwdForm: any) {
-    if (ResetpwdForm.valid) {
-      if (this.ResetData.RPassword !== this.ResetData.confirmPassword) {
-        this.msgerr = 'invalid Credential';
-        this.showmsgerr=true;
-      }
+  this.showmsgerr = false;
+  this.showmsgsucc = false;
 
-      this.users = JSON.parse(localStorage.getItem('users') || '[]');
-
-      const userindex = this.users.findIndex(
-        (user: any) => user.username === this.ResetData.username
-      );
-
-      if (userindex !== -1) {
-        this.users[userindex].password = this.ResetData.RPassword;
-
-        localStorage.setItem('users', JSON.stringify(this.users));
-        sessionStorage.setItem('Resetedpwd', this.ResetData.RPassword);
-        this.msgsucc = 'Password Reset Success';
-        this.showmsgsucc =true;
-
-        this.router.navigate(['/login']);
-      } 
+  if (ResetpwdForm.valid) {
+    if (this.ResetData.RPassword !== this.ResetData.confirmPassword) {
+      this.msgerr = 'Password and Confirm Password do not match';
+      this.showmsgerr = true;
+      return;
     }
+
+    this.firebase.updatePassword(this.ResetData.username, this.ResetData.RPassword);
+
+    this.msgsucc = 'Password Reset Successful';
+    this.showmsgsucc = true;
+
+    setTimeout(() => {
+      this.router.navigate(['/login']);
+    }, 2000);
   }
+}
+
 
   clearForm(ResetpwdForm: any) {
     ResetpwdForm.resetForm();
+    this.showmsgerr = false;
+    this.showmsgsucc = false;
   }
 }

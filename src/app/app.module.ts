@@ -19,6 +19,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { environment } from '../environments/environment';
+
 
 @NgModule({
   declarations: [
@@ -28,7 +32,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     LoginComponent,
     SignupComponent,
     ResetpasswordComponent,
-    NavComponent
+    NavComponent,
+    
   ],
   imports: [
     BrowserModule,
@@ -40,7 +45,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatIconModule,
     MatSidenavModule,
     MatFormFieldModule,
-    FormsModule
+    FormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireDatabaseModule,
 
   ],
   providers: [],

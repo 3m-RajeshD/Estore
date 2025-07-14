@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FirebaseService } from '../services/firebase.service';
 
 @Component({
   selector: 'app-signup',
@@ -18,42 +19,33 @@ export class SignupComponent implements OnInit {
   showmsg: boolean = false;
   showerrmsg: boolean = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,
+    private firebase: FirebaseService
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onSubmit(RegisterForm: any) {
     if (RegisterForm.valid) {
-      if (this.RegisterData.RegisterPassword !== this.RegisterData.confirmPassword) {
-        this.message = 'Password mismatch';
-        this.showerrmsg = true;
-        this.showmsg = false;
-        return;
-      }
+      this.firebase.checkUsername(this.RegisterData.RegisterUserName, (exists: boolean) => {
+        if (exists) {
+          this.message = 'Signup Success';
+          this.showerrmsg = false;
+          this.showmsg = true;
+        } else {
+          this.firebase.addUser({
+            username: this.RegisterData.RegisterUserName,
+            password: this.RegisterData.RegisterPassword
+          });
+          this.message = 'Signup Success';
+          this.showmsg = true;
+          this.showerrmsg = false;
 
-        this.users = JSON.parse(localStorage.getItem('users') || '[]');
-
-
-      const exists = this.users.some((user: any) => user.username === this.RegisterData.RegisterUserName);
-      if (exists) {
-        this.message = 'Username already exists';
-        this.showerrmsg = true;
-        return;
-      }
-
-   
-      this.users.push({
-        username: this.RegisterData.RegisterUserName,
-        password: this.RegisterData.RegisterPassword
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        }
       });
-
-      localStorage.setItem('users', JSON.stringify(this.users));
-      this.message = 'Register Success';
-      this.showmsg = true;
-
-      setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
     }
   }
 
