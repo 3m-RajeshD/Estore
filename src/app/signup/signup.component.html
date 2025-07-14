@@ -1,0 +1,77 @@
+<div
+    class="login-page d-flex justify-content-center align-items-center vh-100">
+    <div class="card transparent-card p-4 shadow-lg">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">Signup</h2>
+            <form #RegisterForm="ngForm" (ngSubmit)="onSubmit(RegisterForm)">
+
+                <div class="col mb-3">
+                    <label for="UserName"
+                        class="form-label">Username</label>
+                    <input type="text" name="UserName" id="UserName"
+                        placeholder="Username"
+                        class="form-control"
+                        [(ngModel)]="RegisterData.RegisterUserName"
+                        #UserName="ngModel" required autocomplete="off">
+
+                    <div
+                        *ngIf="RegisterForm.invalid && RegisterForm.submitted || (UserName.dirty || UserName.touched)"
+                        class="error">
+                        <div
+                            *ngIf="UserName.errors?.['required']">Username is
+                            required.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="registerPassword"
+                        class="form-label">Password</label>
+                    <input type="password" name="registerPassword"
+                        id="registerPassword"
+                        placeholder="Password"
+                        class="form-control"
+                        [(ngModel)]="RegisterData.RegisterPassword"
+                        #registerPassword="ngModel" required autocomplete="off">
+                    <div
+                        *ngIf="RegisterForm.invalid && RegisterForm.submitted || (registerPassword.dirty || registerPassword.touched)"
+                        class="error">
+                        <div
+                            *ngIf="registerPassword.errors?.['required']">Password
+                            is
+                            required.
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword"
+                        class="form-label">confirm Password</label>
+                    <input type="password" name="confirmPassword"
+                        id="confirmPassword"
+                        placeholder="confirm Password"
+                        class="form-control"
+                        [(ngModel)]="RegisterData.confirmPassword"
+                        #confirmPassword="ngModel" required autocomplete="off">
+                    <div *ngIf="showmsg" class="success">
+                        {{ message }}
+                    </div>
+                     <div *ngIf="showerrmsg" class="error">
+                        {{ message }}
+                    </div>
+                    <div
+                        *ngIf="RegisterForm.invalid && RegisterForm.submitted || (confirmPassword.dirty || confirmPassword.touched)"
+                        class="error">
+                        <div
+                            *ngIf="confirmPassword.errors?.['required']">Password
+                            is
+                            required.
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 text-center">
+                    <button type="submit"
+                        class="btn btn-success btn-sm me-2">Signup</button>
+                    <button type="button"
+                        class="btn btn-outline-warning btn-sm"
+                        (click)="clearForm(RegisterForm)">Clear</button>
+                </div>

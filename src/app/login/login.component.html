@@ -1,0 +1,73 @@
+ <div
+    class="login-page d-flex justify-content-center align-items-center vh-100">
+    <div class="card transparent-card p-4 ">
+        <div class="card-body">
+            <h2 class="card-title text-center mb-4">Login</h2>
+            <form #LoginForm="ngForm" (ngSubmit)="onSubmit(LoginForm)">
+                <div class="mb-3">
+                    <label for="UserName"
+                        class="form-label">Username</label>
+                    <input type="text" name="UserName" id="UserName"
+                        placeholder="Username"
+                        class="form-control"
+                        [(ngModel)]="LoginData.UserName"
+                        #UserName="ngModel" required autocomplete="off">
+                    <div
+                        *ngIf="LoginForm.invalid && LoginForm.submitted || (UserName.dirty || UserName.touched)"
+                        class="error">
+                        <div
+                            *ngIf="UserName.errors?.['required']">Username is
+                            required.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Password"
+                        class="form-label">Password</label>
+                    <input type="password" name="Password" id="Password"
+                        placeholder="Password"
+                        class="form-control"
+                        [(ngModel)]="LoginData.Password"
+                        #Password="ngModel" required autocomplete="off">
+                        <h3 class="success">{{msgsucc}}</h3>
+                    <div
+                        *ngIf="LoginForm.invalid && LoginForm.submitted || (Password.dirty || Password.touched)"
+                        class="error">
+                        <div
+                            *ngIf="Password.errors?.['required']">Password is
+                            required.
+                        </div>
+                    </div>
+                    <div *ngIf="showerror" class="error">
+                        {{ msgerr }}
+                    </div>
+                </div>
+
+                <div
+                    class="mb-3 d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input"
+                            name="Remember" id="Remember"
+                            [(ngModel)]="LoginData.Remember">
+                        <label for="Remember"
+                            class="form-check-label" style=" color: rgb(230, 131, 45);  cursor: pointer; ">Remember me</label>
+                    </div>
+                    <a (click)="onForgetPassword()" style="margin-left: 12px; color: rgb(230, 131, 45);  cursor: pointer; ">Forgot
+                        Password?</a>
+                </div>
+
+                <div class="mb-3 text-center">
+                    <button type="submit" 
+                        class="btn btn-success btn-sm me-2">Login</button>
+                    <button type="button"
+                        class="btn btn-outline-warning btn-sm" (click)="clearForm(LoginForm)">Clear</button>
+                </div>
+                <div class="mb-3 text-center" >
+                    <a (click)="Signup()" style="cursor: pointer;">Don't have an account?
+                        Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

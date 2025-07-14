@@ -1,0 +1,29 @@
+<mat-toolbar color="primary" style="background-color: rgb(0 103 103)">
+    <button mat-icon-button (click)="isExpanded = !isExpanded">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <h1>3M</h1>
+</mat-toolbar>
+
+<mat-sidenav-container autosize style="height: 89vh;">
+    <mat-sidenav #sidenav *ngIf="!isAuthPage()" mode="side" [opened]="isExpanded"
+        style="background-color: rgb(237, 242, 242);">
+        <mat-nav-list>
+            <a mat-list-item routerLink="/dashboard"
+                routerLinkActive="active-link">
+                <span *ngIf="isExpanded">Dashboard</span>
+                <mat-icon mat-list-icon>home</mat-icon>
+            </a>
+
+            <!-- <a mat-list-item routerLink="/currency"
+                routerLinkActive="active-link">
+                <span *ngIf="isExpanded">Currency</span>
+                <mat-icon mat-list-icon>attach_money</mat-icon>
+            </a> -->
+        </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
